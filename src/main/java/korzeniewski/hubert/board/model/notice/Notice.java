@@ -1,4 +1,4 @@
-package korzeniewski.hubert.board.model;
+package korzeniewski.hubert.board.model.notice;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,14 +12,22 @@ public class Notice {
     private String author;
     private String date;
     private String content;
+    private String title;
 
-    public Notice() {
+    public String getTitle() {
+        return title;
     }
 
-    public Notice(String author, String date, String content) {
-        this.author = author;
-        this.date = date;
-        this.content = content;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getAuthor() {
