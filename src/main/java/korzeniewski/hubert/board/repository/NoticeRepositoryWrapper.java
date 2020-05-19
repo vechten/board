@@ -6,19 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
  * Check database for existence of notice.
  */
 @Service
-public class NoticeRepositoryChecker {
+public class NoticeRepositoryWrapper {
 
     private NoticeRepository noticeRepository;
     private NoticeMatcher noticeMatcher;
 
     @Autowired
-    public NoticeRepositoryChecker(NoticeRepository noticeRepository, NoticeMatcher noticeMatcher) {
+    public NoticeRepositoryWrapper(NoticeRepository noticeRepository, NoticeMatcher noticeMatcher) {
         this.noticeRepository = noticeRepository;
         this.noticeMatcher = noticeMatcher;
     }
@@ -34,5 +35,17 @@ public class NoticeRepositoryChecker {
         Example<Notice> exampleNewNotice = noticeMatcher.createExampleWithAllMatcher(noticeToCheck);
         return noticeRepository.findOne(exampleNewNotice);
     }
+
+    /**
+     * Sets time of notice and saves it to database.
+     *
+     * @param noticeToSave
+     * @return saved notice
+     */
+    public Notice saveNotice(Notice noticeToSave) {
+        noticeToSave.setDate(new Date().toString());
+        return noticeRepository.save(noticeToSave);
+    }
+
 
 }

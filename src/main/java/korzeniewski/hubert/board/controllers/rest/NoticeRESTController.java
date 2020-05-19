@@ -4,7 +4,8 @@ import korzeniewski.hubert.board.matchers.NoticeMatcher;
 import korzeniewski.hubert.board.model.notice.Notice;
 import korzeniewski.hubert.board.model.notice.NoticesWithPagination;
 import korzeniewski.hubert.board.repository.NoticeRepository;
-import korzeniewski.hubert.board.repository.NoticeRepositoryChecker;
+import korzeniewski.hubert.board.repository.NoticeRepositoryWrapper;
+import korzeniewski.hubert.board.validators.NoticeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -31,16 +32,16 @@ public class NoticeRESTController {
     private NoticeRepository noticeRepository;
     private PageToNoticesWithPaginationConverter converter;
     private NoticeMatcher noticeMatcher;
-    private NoticeRepositoryChecker noticeRepositoryChecker;
+    private NoticeRepositoryWrapper noticeRepositoryWrapper;
+    private NoticeValidator noticeValidator;
 
 
-    @Autowired
-    public NoticeRESTController(NoticeRepository noticeRepository, NoticeRepositoryChecker noticeRepositoryChecker, PageToNoticesWithPaginationConverter converter, NoticeMatcher noticeMatcher) {
-
-        this.noticeRepositoryChecker = noticeRepositoryChecker;
+    public NoticeRESTController(NoticeRepository noticeRepository, PageToNoticesWithPaginationConverter converter, NoticeMatcher noticeMatcher, NoticeRepositoryWrapper noticeRepositoryWrapper, NoticeValidator noticeValidator) {
         this.noticeRepository = noticeRepository;
         this.converter = converter;
         this.noticeMatcher = noticeMatcher;
+        this.noticeRepositoryWrapper = noticeRepositoryWrapper;
+        this.noticeValidator = noticeValidator;
     }
 
     /**
@@ -89,12 +90,9 @@ public class NoticeRESTController {
      */
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> addNewNotice(@RequestBody Notice newNotice) throws Exception {
-        noticeRepository.save(newNotice);
-        Optional<Notice> postedNotice = noticeRepositoryChecker.checkDatabaseForNotice(newNotice);
-        if (postedNotice.isPresent()) {
-            return new ResponseEntity<>(postedNotice.get(), HttpStatus.OK);
-        }
-        throw new Exception("Notice could not be found in database after adding.");
+        noticeValidator.validateNotice(newNotice);
+        Notice postedNotice = noticeRepositoryWrapper.saveNotice(newNotice);
+        return new ResponseEntity<>(postedNotice, HttpStatus.OK);
     }
 
 
