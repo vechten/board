@@ -70,10 +70,11 @@ public class NoticeRESTController {
      * @return notices which match example notice
      */
     @PostMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getNoticesAfterFilteringWithExample(@RequestBody Notice noticeToFilter) {
+    public ResponseEntity<Object> getNoticesAfterFilteringWithExample(@RequestBody Notice noticeToFilter, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageLength") int pageLength) {
         Example<Notice> exampleNotice = noticeMatcher.createExample(noticeToFilter);
-        List<Notice> filteredNotices = noticeRepository.findAll(exampleNotice);
-        return new ResponseEntity<>(filteredNotices, HttpStatus.OK);
+        Page<Notice> pageOfNotices = noticeRepository.findAll(exampleNotice, new PageRequest(pageNumber, pageLength));
+        NoticesWithPagination noticesWithPagination = converter.convertPageToNoticesWithPagination(pageOfNotices);
+        return new ResponseEntity<>(noticesWithPagination, HttpStatus.OK);
     }
 
     /**
