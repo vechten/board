@@ -26,17 +26,10 @@ public class NoticeDataInitializer {
      */
     @PostConstruct
     public void initializeExampleNotices() {
-        Notice notice1 = noticeBuilder.withAuthor("User1").withDate(new Date().toString()).withTitle("Notice No. 1").withContent("Content No. 1").buildMessage();
-        noticeRepository.save(notice1);
-
-        Notice notice2 = noticeBuilder.withAuthor("User2").withDate(new Date().toString()).withTitle("Notice No. 2").withContent("Content No. 2").buildMessage();
-        noticeRepository.save(notice2);
-
-        Notice notice3 = noticeBuilder.withAuthor("User3").withDate(new Date().toString()).withTitle("Notice No. 3").withContent("Content No. 3").buildMessage();
-        noticeRepository.save(notice3);
-
-        Notice notice4 = noticeBuilder.withAuthor("User4").withDate(new Date().toString()).withTitle("Notice No. 4").withContent("Content No. 4").buildMessage();
-        noticeRepository.save(notice4);
+        for(int i = 1; i <= 100; i++){
+            Notice notice = noticeBuilder.withAuthor("User" + i).withDate(new Date().toString()).withTitle("Notice No. " + i).withContent("Content No. " + i).buildNotice();
+            noticeRepository.save(notice);
+        }
     }
 
 }

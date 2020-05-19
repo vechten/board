@@ -30,13 +30,10 @@ public class NoticeBuilder {
         return this;
     }
 
-    public Notice buildMessage() {
+    public Notice buildNotice() {
         Notice notice = new Notice();
         notice.setAuthor(this.author);
         notice.setDate(this.date);
-        notice.setTitle(this.title);
-        notice.setContent(this.content);
         return notice;
     }
-
 }

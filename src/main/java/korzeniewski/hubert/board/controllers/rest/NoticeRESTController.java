@@ -1,7 +1,11 @@
-package korzeniewski.hubert.board.controllers;
+package korzeniewski.hubert.board.controllers.rest;
+import korzeniewski.hubert.board.converters.PageToNoticesWithPaginationConverter;
 import korzeniewski.hubert.board.model.notice.Notice;
+import korzeniewski.hubert.board.model.notice.NoticesWithPagination;
 import korzeniewski.hubert.board.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +25,12 @@ public class NoticeRESTController {
     private static final Logger logger = Logger.getLogger(NoticeRESTController.class.getName());
 
     private NoticeRepository noticeRepository;
+    private PageToNoticesWithPaginationConverter converter;
 
     @Autowired
-    public NoticeRESTController(NoticeRepository noticeRepository) {
+    public NoticeRESTController(NoticeRepository noticeRepository, PageToNoticesWithPaginationConverter converter) {
         this.noticeRepository = noticeRepository;
+        this.converter = converter;
     }
 
     /**
@@ -37,6 +43,20 @@ public class NoticeRESTController {
         List<Notice> allNotices = noticeRepository.findAll();
         return new ResponseEntity<>(allNotices, HttpStatus.OK);
     }
+
+    /**
+     * Returns notices from given page.
+     *
+     * @param pageNumber number of page with notices to return
+     * @param pageLength amount of notices on page
+     * @return requested page of notices
+     */
+    @GetMapping(value = "/page", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getNoticesFromGivenPage(@RequestParam("pageNumber") int pageNumber, @RequestParam("pageLength") int pageLength) {
+        List<Notice> allNotices = noticeRepository.findAll();
+        return new ResponseEntity<>(allNotices, HttpStatus.OK);
+    }
+
 
     /**
      * Saves information about exception to logger and returns information about exception through ResponseEntity.
