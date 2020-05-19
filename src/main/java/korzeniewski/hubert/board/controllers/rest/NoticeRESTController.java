@@ -4,6 +4,7 @@ import korzeniewski.hubert.board.matchers.NoticeMatcher;
 import korzeniewski.hubert.board.model.notice.Notice;
 import korzeniewski.hubert.board.model.notice.NoticesWithPagination;
 import korzeniewski.hubert.board.repository.NoticeRepository;
+import korzeniewski.hubert.board.repository.NoticeRepositoryChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,11 +31,13 @@ public class NoticeRESTController {
     private NoticeRepository noticeRepository;
     private PageToNoticesWithPaginationConverter converter;
     private NoticeMatcher noticeMatcher;
+    private NoticeRepositoryChecker noticeRepositoryChecker;
+
 
     @Autowired
-    public NoticeRESTController(NoticeRepository noticeRepository, PageToNoticesWithPaginationConverter converter,
-                                NoticeMatcher noticeMatcher) {
+    public NoticeRESTController(NoticeRepository noticeRepository, NoticeRepositoryChecker noticeRepositoryChecker, PageToNoticesWithPaginationConverter converter, NoticeMatcher noticeMatcher) {
 
+        this.noticeRepositoryChecker = noticeRepositoryChecker;
         this.noticeRepository = noticeRepository;
         this.converter = converter;
         this.noticeMatcher = noticeMatcher;
@@ -71,11 +75,28 @@ public class NoticeRESTController {
      */
     @PostMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getNoticesAfterFilteringWithExample(@RequestBody Notice noticeToFilter, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageLength") int pageLength) {
-        Example<Notice> exampleNotice = noticeMatcher.createExample(noticeToFilter);
+        Example<Notice> exampleNotice = noticeMatcher.createExampleWithAnyMatcher(noticeToFilter);
         Page<Notice> pageOfNotices = noticeRepository.findAll(exampleNotice, new PageRequest(pageNumber, pageLength));
         NoticesWithPagination noticesWithPagination = converter.convertPageToNoticesWithPagination(pageOfNotices);
         return new ResponseEntity<>(noticesWithPagination, HttpStatus.OK);
     }
+    /**
+     * Post new notice to database and check the existence of that new notice in database.
+     *
+     * @param newNotice notice from request body to be added to database
+     * @return added notice
+     * @throws Exception in case if that post does not exist in database
+     */
+    @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> addNewNotice(@RequestBody Notice newNotice) throws Exception {
+        noticeRepository.save(newNotice);
+        Optional<Notice> postedNotice = noticeRepositoryChecker.checkDatabaseForNotice(newNotice);
+        if (postedNotice.isPresent()) {
+            return new ResponseEntity<>(postedNotice.get(), HttpStatus.OK);
+        }
+        throw new Exception("Notice could not be found in database after adding.");
+    }
+
 
     /**
      * Saves information about exception to logger and returns information about exception through ResponseEntity.
