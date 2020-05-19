@@ -1,20 +1,22 @@
 package korzeniewski.hubert.board.controllers.rest;
 import korzeniewski.hubert.board.converters.PageToNoticesWithPaginationConverter;
+import korzeniewski.hubert.board.matchers.NoticeMatcher;
 import korzeniewski.hubert.board.model.notice.Notice;
 import korzeniewski.hubert.board.model.notice.NoticesWithPagination;
 import korzeniewski.hubert.board.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 @RestController
@@ -26,11 +28,15 @@ public class NoticeRESTController {
 
     private NoticeRepository noticeRepository;
     private PageToNoticesWithPaginationConverter converter;
+    private NoticeMatcher noticeMatcher;
 
     @Autowired
-    public NoticeRESTController(NoticeRepository noticeRepository, PageToNoticesWithPaginationConverter converter) {
+    public NoticeRESTController(NoticeRepository noticeRepository, PageToNoticesWithPaginationConverter converter,
+                                NoticeMatcher noticeMatcher) {
+
         this.noticeRepository = noticeRepository;
         this.converter = converter;
+        this.noticeMatcher = noticeMatcher;
     }
 
     /**
@@ -43,7 +49,6 @@ public class NoticeRESTController {
         List<Notice> allNotices = noticeRepository.findAll();
         return new ResponseEntity<>(allNotices, HttpStatus.OK);
     }
-
     /**
      * Returns notices from given page.
      *
@@ -53,10 +58,23 @@ public class NoticeRESTController {
      */
     @GetMapping(value = "/page", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getNoticesFromGivenPage(@RequestParam("pageNumber") int pageNumber, @RequestParam("pageLength") int pageLength) {
-        List<Notice> allNotices = noticeRepository.findAll();
-        return new ResponseEntity<>(allNotices, HttpStatus.OK);
+        Page<Notice> pageOfNotices = noticeRepository.findAll(new PageRequest(pageNumber, pageLength));
+        NoticesWithPagination noticesWithPagination = converter.convertPageToNoticesWithPagination(pageOfNotices);
+        return new ResponseEntity<>(noticesWithPagination, HttpStatus.OK);
     }
 
+    /**
+     * Returns notices which match example notice from request body
+     *
+     * @param noticeToFilter example notice to match
+     * @return notices which match example notice
+     */
+    @PostMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getNoticesAfterFilteringWithExample(@RequestBody Notice noticeToFilter) {
+        Example<Notice> exampleNotice = noticeMatcher.createExample(noticeToFilter);
+        List<Notice> filteredNotices = noticeRepository.findAll(exampleNotice);
+        return new ResponseEntity<>(filteredNotices, HttpStatus.OK);
+    }
 
     /**
      * Saves information about exception to logger and returns information about exception through ResponseEntity.
@@ -71,5 +89,4 @@ public class NoticeRESTController {
         logger.log(Level.WARNING, errorMessage);
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
-
 }
