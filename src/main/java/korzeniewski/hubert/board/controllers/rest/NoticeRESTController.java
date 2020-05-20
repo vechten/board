@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  * REST controller to operate with model class Notice.
  */
@@ -81,11 +80,11 @@ public class NoticeRESTController {
     }
 
     /**
-     * Returns requested notices.
+     * Returns requested notice.
      *
      * @param noticeId of requested one
-     * @return requested notices
-     * @throws NotFoundException in case if notices of requested id does not exist
+     * @return requested notice
+     * @throws NotFoundException in case if notice of requested id does not exist
      */
     @GetMapping(value = "/{noticeId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getNotice(@PathVariable int noticeId) throws NotFoundException {
@@ -94,10 +93,10 @@ public class NoticeRESTController {
     }
 
     /**
-     * Returns text content of requested notices.
+     * Returns text content of requested notice.
      *
      * @param noticeId of requested text content
-     * @return text content of notices
+     * @return text content of notice
      * @throws NotFoundException
      */
     @GetMapping(value = "/{noticeId}/content", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -111,7 +110,7 @@ public class NoticeRESTController {
     /**
      * Returns notices according to requested index of page, page size, sorting, filtering.
      *
-     * @param noticeToFilter example notices with filters
+     * @param noticeToFilter example notice with filters
      * @param pageIndex      of requested one
      * @param pageSize       of requested one
      * @param sorting        of requested one
@@ -123,16 +122,16 @@ public class NoticeRESTController {
         Pair<String, Sort.Direction> sortScheme = sortingSchemeToTupleConverter.convertSortingSchemeToTuple(sorting);
         Notice convertedNotice = noticeToFilterToNoticeConverter.convert(noticeToFilter);
         Example<Notice> exampleNotice = noticeMatcher.createExampleWithAllMatcher(convertedNotice);
-        Page<Notice> notices = noticeRepository.findAll(exampleNotice, new PageRequest(pageIndex, pageSize, sortScheme.getValue(), sortScheme.getKey()));
+        Page<Notice> notices = noticeRepository.findAll(exampleNotice, new PageRequest(pageIndex, pageSize, sortScheme.getSecond(), sortScheme.getFirst()));
         NoticesWithPagination noticesWithPagination = converter.convertPageToNoticesWithPagination(notices);
         return new ResponseEntity<>(noticesWithPagination, HttpStatus.OK);
     }
 
     /**
-     * Post new notices to database and check the existence of that new notices in database.
+     * Post new notice to database and check the existence of that new notice in database.
      *
-     * @param newNotice notices from request body to be added to database
-     * @return added notices
+     * @param newNotice notice from request body to be added to database
+     * @return added notice
      * @throws Exception in case if that post does not exist in database
      */
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -143,10 +142,10 @@ public class NoticeRESTController {
     }
 
     /**
-     * Add images to existing notices.
+     * Add images to existing notice.
      *
      * @param noticeId       to update with images
-     * @param uploadedImages images to be attached to notices
+     * @param uploadedImages images to be attached to notice
      * @return images after saving in database
      * @throws IOException
      * @throws NoticeNotFoundException
@@ -183,7 +182,7 @@ public class NoticeRESTController {
     public ResponseEntity<Object> handleError(HttpServletRequest req, Exception ex) {
         String errorMessage = "Request: " + req.getRequestURL() + " raised " + ex.getClass().getSimpleName() + " with message: " + ex.getMessage();
         logger.log(Level.WARNING, errorMessage);
-        HttpStatus httpStatus = ex instanceof ChangeSetPersister.NotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
+        HttpStatus httpStatus = ex instanceof NotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(errorMessage, httpStatus);
     }
 
