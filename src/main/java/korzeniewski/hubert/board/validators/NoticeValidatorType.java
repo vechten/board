@@ -4,15 +4,15 @@ import korzeniewski.hubert.board.model.notice.Notice;
 import org.springframework.stereotype.Component;
 
 /**
- * Interface to gather all types of notice validators
+ * Interface to gather all types of notices validators
  */
 @Component
 public interface NoticeValidatorType {
 
     /**
-     * Validates field of given notice.
+     * Validates field of given notices.
      *
-     * @param noticeToValidate notice which field will have been validated.
+     * @param noticeToValidate notices which field will have been validated.
      * @return boolean value of validation
      * @throws Exception in case of not passing validation
      */

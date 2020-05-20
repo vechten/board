@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Class of notice validator.
+ * Class of notices validator.
  */
 @Service
 public class NoticeValidator {
@@ -20,7 +20,7 @@ public class NoticeValidator {
     }
 
     /**
-     * Validates notice by using all types of notice validators.
+     * Validates notices by using all types of notices validators.
      *
      * @param noticeToValidate
      * @return boolean value of validation

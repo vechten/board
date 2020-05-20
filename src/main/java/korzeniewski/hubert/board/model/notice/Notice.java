@@ -1,25 +1,40 @@
 package korzeniewski.hubert.board.model.notice;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import korzeniewski.hubert.board.model.images.ImagesOfNotice;
+import korzeniewski.hubert.board.security.model.User;
 
+
+import javax.persistence.*;
+import java.util.Date;
+
+/**
+ * Model class for notices.
+ */
 @Entity
 public class Notice {
+
     @Id
     @GeneratedValue
     private int id;
-    private String author;
-    private String date;
-    private String content;
+    @ManyToOne
+    private User author;
+    @JsonIgnore
+    private Date creationDate;
+    @JsonIgnore
+    private Date creationTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = JsonFormat.DEFAULT_LOCALE)
+    private Date creationDateAndTime;
     private String title;
+    @Lob
+    @JsonIgnore
+    private String content;
+    @JsonIgnore
+    @OneToOne(mappedBy = "notices", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    private ImagesOfNotice images;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public Notice() {
     }
 
     public int getId() {
@@ -30,20 +45,44 @@ public class Notice {
         this.id = id;
     }
 
-    public String getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
-    public String getDate() {
-        return date;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setCreationDate(Date date) {
+        this.creationDate = date;
+    }
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Date creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Date getCreationDateAndTime() {
+        return creationDateAndTime;
+    }
+
+    public void setCreationDateAndTime(Date creationDateAndTime) {
+        this.creationDateAndTime = creationDateAndTime;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getContent() {
@@ -52,6 +91,14 @@ public class Notice {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public ImagesOfNotice getImages() {
+        return images;
+    }
+
+    public void setImages(ImagesOfNotice images) {
+        this.images = images;
     }
 
 }

@@ -8,16 +8,9 @@ import java.util.List;
  */
 public class NoticesWithPagination {
 
-    private int totalNumberOfPages;
+    private long totalNumberOfAllNotices;
     private List<Notice> noticesFromPage = new ArrayList<>();
-
-    public int getTotalNumberOfPages() {
-        return totalNumberOfPages;
-    }
-
-    public void setTotalNumberOfPages(int totalNumberOfPages) {
-        this.totalNumberOfPages = totalNumberOfPages;
-    }
+    private String sortingScheme;
 
     public List<Notice> getNoticesFromPage() {
         return noticesFromPage;
@@ -27,4 +20,22 @@ public class NoticesWithPagination {
         this.noticesFromPage = noticesFromPage;
     }
 
+    public long getTotalNumberOfAllNotices() {
+        return totalNumberOfAllNotices;
+    }
+
+    public void setTotalNumberOfAllNotices(long totalNumberOfAllNotices) {
+        this.totalNumberOfAllNotices = totalNumberOfAllNotices;
+    }
+
+    public String getSortingScheme() {
+        return sortingScheme;
+    }
+
+    public void setSortingScheme(String sortingScheme) {
+        this.sortingScheme = sortingScheme;
+    }
+
 }
+
+

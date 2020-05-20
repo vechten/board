@@ -6,15 +6,15 @@ import korzeniewski.hubert.board.validators.exceptions.NoticeValidationException
 import org.springframework.stereotype.Service;
 
 /**
- * Validator of content field of notice.
+ * Validator of content field of notices.
  */
 @Service
 public class ContentNoticeValidator implements NoticeValidatorType {
 
     /**
-     * Validates content field of given notice.
+     * Validates content field of given notices.
      *
-     * @param noticeToValidate notice which field will have been validated.
+     * @param noticeToValidate notices which field will have been validated.
      * @return result of validation
      * @throws Exception in case of not passing validation
      */
@@ -22,7 +22,7 @@ public class ContentNoticeValidator implements NoticeValidatorType {
     public boolean validate(Notice noticeToValidate) throws NoticeValidationException {
         String contentToValidate = noticeToValidate.getContent();
         if (contentToValidate == null || contentToValidate.equals("")) {
-            throw new NoticeValidationException("Incorrect value of content in new notice.");
+            throw new NoticeValidationException("Incorrect value of content in new notices.");
         }
         return true;
     }

@@ -6,14 +6,14 @@ import korzeniewski.hubert.board.validators.exceptions.NoticeValidationException
 import org.springframework.stereotype.Service;
 
 /**
- * Validator of title field of notice.
+ * Validator of title field of notices.
  */
 @Service
 public class TitleNoticeValidator implements NoticeValidatorType {
 
     /**
-     * Validates title field of given notice.
-     * @param noticeToValidate notice which field will have been validated.
+     * Validates title field of given notices.
+     * @param noticeToValidate notices which field will have been validated.
      * @return validation result
      * @throws Exception in case of not passing validation
      */
@@ -21,7 +21,7 @@ public class TitleNoticeValidator implements NoticeValidatorType {
     public boolean validate(Notice noticeToValidate) throws NoticeValidationException {
         String titleToValidate = noticeToValidate.getTitle();
         if (titleToValidate == null || titleToValidate.equals("")) {
-            throw new NoticeValidationException("Incorrect value of title in new notice.");
+            throw new NoticeValidationException("Incorrect value of title in new notices.");
         }
         return true;
     }
