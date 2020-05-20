@@ -2,6 +2,7 @@ package korzeniewski.hubert.board.validators.fields;
 
 import korzeniewski.hubert.board.model.notice.Notice;
 import korzeniewski.hubert.board.validators.NoticeValidatorType;
+import korzeniewski.hubert.board.validators.exceptions.NoticeValidationException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,10 +18,10 @@ public class TitleNoticeValidator implements NoticeValidatorType {
      * @throws Exception in case of not passing validation
      */
     @Override
-    public boolean validate(Notice noticeToValidate) throws Exception {
+    public boolean validate(Notice noticeToValidate) throws NoticeValidationException {
         String titleToValidate = noticeToValidate.getTitle();
         if (titleToValidate == null || titleToValidate.equals("")) {
-            throw new Exception("Incorrect value of title in new notice.");
+            throw new NoticeValidationException("Incorrect value of title in new notice.");
         }
         return true;
     }
